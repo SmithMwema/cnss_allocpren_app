@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "96373236347",
+    "project_id": "cnss-allocations-app",
+    "storage_bucket": "cnss-allocations-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96373236347:android:d312b9f3a48a138e7b78de",
+        "android_client_info": {
+          "package_name": "com.example.cnss_allocpren_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2SwMt_DFNUdU0DRrux9vNFgnjzDoKoKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

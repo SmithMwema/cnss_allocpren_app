@@ -1,0 +1,46 @@
+name: cnss_allocpren_app
+description: Application de gestion des allocations prénatales pour la CNSS.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+# ==========================================================
+#              DÉPENDANCES DE PRODUCTION
+# ==========================================================
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # --- DÉPENDANCES DE BASE ---
+  get: ^4.6.6
+  google_fonts: ^6.1.0
+  file_picker: ^6.1.1
+  intl: ^0.18.1
+  cupertino_icons: ^1.0.2
+  curved_navigation_bar: ^1.0.3
+
+  # --- DÉPENDANCES FIREBASE ---
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.17.8
+  cloud_firestore: ^4.15.8
+
+  # --- DÉPENDANCE POUR LES GRAPHIQUES (VERSION CORRIGÉE) ---
+  # On remplace l'ancien 'charts_flutter' par le nouveau 'charts_flutter_new'
+  fl_chart: ^0.66.2
+
+# ==========================================================
+#              DÉPENDANCES DE DÉVELOPPEMENT
+# ==========================================================
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  flutter_lints: ^2.0.0
+
+# ==========================================================
+#              CONFIGURATION DE FLUTTER
+# ==========================================================
+flutter:
+  uses-material-design: true
