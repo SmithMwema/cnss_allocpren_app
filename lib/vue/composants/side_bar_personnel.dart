@@ -6,7 +6,6 @@ class SideBarPersonnel extends StatelessWidget {
   final String nom;
   final String email;
   final VoidCallback onDeconnexion;
-  // --- NOUVEAU PARAMÈTRE OPTIONNEL ---
   final List<Widget>? itemsSupplementaires;
 
   const SideBarPersonnel({
@@ -14,7 +13,7 @@ class SideBarPersonnel extends StatelessWidget {
     required this.nom,
     required this.email,
     required this.onDeconnexion,
-    this.itemsSupplementaires, // On l'ajoute au constructeur
+    this.itemsSupplementaires,
   });
 
   @override
@@ -30,19 +29,16 @@ class SideBarPersonnel extends StatelessWidget {
               accountEmail: Text(email),
               currentAccountPicture: const CircleAvatar(
                 backgroundColor: Color(0xff00a99d),
-                child: Icon(Icons.admin_panel_settings, size: 40, color: Colors.white),
+                child: Icon(Icons.person_outline, size: 40, color: Colors.white),
               ),
               decoration: const BoxDecoration(color: Color(0xff0d1b2a)),
             ),
             ListTile(
-              leading: const Icon(Icons.dashboard_outlined, color: Colors.white70),
-              title: const Text('Tableau de bord', style: TextStyle(color: Colors.white)),
+              leading: const Icon(Icons.home_outlined, color: Colors.white70),
+              title: const Text('Accueil', style: TextStyle(color: Colors.white)),
               onTap: () => Get.back(),
             ),
-            
-            // --- ON AFFICHE LES ITEMS SUPPLÉMENTAIRES S'ILS SONT FOURNIS ---
             if (itemsSupplementaires != null) ...itemsSupplementaires!,
-            
             const Divider(color: Colors.white24),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.white70),

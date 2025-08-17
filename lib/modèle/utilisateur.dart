@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Utilisateur {
-  final String uid; // L'ID vient de Firebase Auth
+  final String uid;
   final String nom;
   final String email;
   final String role;
@@ -22,12 +22,12 @@ class Utilisateur {
   }
 
   factory Utilisateur.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data()!;
+    final data = doc.data() ?? {};
     return Utilisateur(
       uid: doc.id,
-      nom: data['nom'],
-      email: data['email'],
-      role: data['role'],
+      nom: data['nom'] ?? 'N/A',
+      email: data['email'] ?? 'N/A',
+      role: data['role'] ?? 'beneficiaire',
     );
   }
 }

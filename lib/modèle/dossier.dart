@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Dossier {
-  final String? id; // L'ID vient de Firestore
+  final String? id;
   final String userId;
   final String nomAssure;
   final String prenomAssure;
-  final Timestamp dateSoumission; // Firestore utilise des Timestamps
+  final Timestamp dateSoumission;
   final String statut;
-  // Ajoutez tous les autres champs du formulaire ici (en String pour la plupart)
 
   Dossier({
     this.id,
@@ -18,7 +17,6 @@ class Dossier {
     required this.statut,
   });
 
-  // Méthode pour convertir notre objet en Map pour l'envoyer à Firestore
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
@@ -29,27 +27,25 @@ class Dossier {
     };
   }
 
-  // Méthode pour créer un objet Dossier depuis un document Firestore
   factory Dossier.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data()!;
+    final data = doc.data() ?? {};
     return Dossier(
       id: doc.id,
-      userId: data['userId'],
-      nomAssure: data['nomAssure'],
-      prenomAssure: data['prenomAssure'],
-      dateSoumission: data['dateSoumission'],
-      statut: data['statut'],
+      userId: data['userId'] ?? '',
+      nomAssure: data['nomAssure'] ?? 'N/A',
+      prenomAssure: data['prenomAssure'] ?? 'N/A',
+      dateSoumission: data['dateSoumission'] ?? Timestamp.now(),
+      statut: data['statut'] ?? 'Inconnu',
     );
   }
 
-  // Méthode pour la mise à jour (immuable)
   Dossier copyWith({String? statut}) {
     return Dossier(
-      id: id,
-      userId: userId,
-      nomAssure: nomAssure,
-      prenomAssure: prenomAssure,
-      dateSoumission: dateSoumission,
+      id: this.id,
+      userId: this.userId,
+      nomAssure: this.nomAssure,
+      prenomAssure: this.prenomAssure,
+      dateSoumission: this.dateSoumission,
       statut: statut ?? this.statut,
     );
   }

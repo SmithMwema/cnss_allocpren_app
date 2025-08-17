@@ -1,9 +1,12 @@
 import 'package:get/get.dart';
 
+// On importe tous les contrôleurs qui ont besoin d'un binding
 import '../contrôleur/auth_ctrl.dart';
 import '../contrôleur/declaration_ctrl.dart';
-// --- NOUVEL IMPORT POUR LE CONTRÔLEUR D'AJOUT UTILISATEUR ---
+import '../contrôleur/accueil_ctrl.dart';
+import '../contrôleur/notification_ctrl.dart';
 import '../contrôleur/admin_add_user_ctrl.dart';
+import '../contrôleur/agent_details_dossier_ctrl.dart';
 
 import '../vue/accueil_vue.dart';
 import '../vue/agent/agent_dashboard_vue.dart';
@@ -14,9 +17,8 @@ import '../vue/lancement_moderne_vue.dart';
 import '../vue/caissier/caissier_dashboard_vue.dart';
 import '../vue/admin/admin_dashboard_vue.dart';
 import '../vue/agent/agent_details_dossier_vue.dart';
-// --- NOUVEL IMPORT POUR LA VUE D'AJOUT UTILISATEUR ---
 import '../vue/admin/admin_add_user_vue.dart';
-
+import '../vue/notification_vue.dart';
 
 class AppPages {
   static const String lancement = '/lancement';
@@ -27,9 +29,9 @@ class AppPages {
   static const String directeurDashboard = '/directeur-dashboard';
   static const String caissierDashboard = '/caissier-dashboard';
   static const String adminDashboard = '/admin-dashboard';
-  // --- NOUVEAU NOM DE ROUTE ---
   static const String adminAddUser = '/admin-add-user';
   static const String declaration = '/declaration';
+  static const String notifications = '/notifications';
 
   static final List<GetPage> routes = [
     GetPage(name: lancement, page: () => const LancementModerneVue()),
@@ -40,22 +42,37 @@ class AppPages {
       binding: BindingsBuilder(() { Get.lazyPut<AuthCtrl>(() => AuthCtrl()); }),
     ),
     
-    GetPage(name: accueil, page: () => const AccueilVue()),
+    // --- ON AJOUTE LE BINDING POUR L'ACCUEIL ---
+    GetPage(
+      name: accueil, 
+      page: () => const AccueilVue(),
+      binding: BindingsBuilder(() { Get.lazyPut<AccueilCtrl>(() => AccueilCtrl()); }),
+    ),
+    
     GetPage(name: agentDashboard, page: () => const AgentDashboardVue()),
-    GetPage(name: agentDetailsDossier, page: () => const AgentDetailsDossierVue()),
+    
+    GetPage(
+      name: agentDetailsDossier,
+      page: () => const AgentDetailsDossierVue(),
+      binding: BindingsBuilder(() { Get.lazyPut<AgentDetailsDossierCtrl>(() => AgentDetailsDossierCtrl()); }),
+    ),
+
     GetPage(name: directeurDashboard, page: () => const DirecteurDashboardVue()),
     GetPage(name: caissierDashboard, page: () => const CaissierDashboardVue()),
     GetPage(name: adminDashboard, page: () => const AdminDashboardVue()),
     
-    // --- NOUVELLE ROUTE AVEC SON BINDING ---
+    GetPage(
+      name: notifications,
+      page: () => const NotificationVue(),
+      binding: BindingsBuilder(() { Get.lazyPut<NotificationCtrl>(() => NotificationCtrl()); }),
+    ),
+    
     GetPage(
       name: adminAddUser,
       page: () => const AdminAddUserVue(),
-      binding: BindingsBuilder(() {
-        Get.lazyPut<AdminAddUserCtrl>(() => AdminAddUserCtrl());
-      }),
+      binding: BindingsBuilder(() { Get.lazyPut<AdminAddUserCtrl>(() => AdminAddUserCtrl()); }),
     ),
-    
+
     GetPage(
       name: declaration,
       page: () => const DeclarationVue(),

@@ -1,145 +1,135 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../contrôleur/accueil_ctrl.dart';
+import 'composants/side_bar_personnel.dart';
 
-class AccueilVue extends StatelessWidget {
+// ON TRANSFORME EN GETVIEW
+class AccueilVue extends GetView<AccueilCtrl> {
   const AccueilVue({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final AccueilCtrl ctrl = Get.put(AccueilCtrl());
-
+    // Le contrôleur est maintenant accessible via la propriété "controller"
     return Scaffold(
-      appBar: _buildAppBar(context, ctrl),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Obx(() => Text(
-              "Bonjour, ${ctrl.nomUtilisateur.value}",
-              style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.bold),
-            )),
-            const Text("Bienvenue dans votre espace personnel.", style: TextStyle(fontSize: 16, color: Colors.grey)),
-            const SizedBox(height: 30),
-            _buildActionButton(
-              icon: Icons.add_circle_outline,
-              titre: "Déclarer une grossesse",
-              sousTitre: "Commencez une nouvelle procédure de demande.",
-              onTap: ctrl.allerVersDeclaration,
+      drawer: Obx(() => SideBarPersonnel(
+        nom: controller.nomUtilisateur.value,
+        email: controller.emailUtilisateur.value,
+        onDeconnexion: controller.seDeconnecter,
+        itemsSupplementaires: [
+          ListTile(
+            leading: const Icon(Icons.notifications_outlined, color: Colors.white70),
+            title: const Text('Mes Notifications', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Get.back();
+              controller.allerVersNotifications();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.palette_outlined, color: Colors.white70),
+            title: const Text('Changer de Thème', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Get.back();
+              _afficherDialogueTheme(context);
+            },
+          ),
+        ],
+      )),
+      appBar: AppBar(
+        title: const Text("Mon Espace"),
+        backgroundColor: const Color(0xff1b263b),
+        actions: [
+          Obx(() => Badge(
+            isLabelVisible: controller.aDesNotificationsNonLues.value,
+            child: IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              onPressed: controller.allerVersNotifications,
+              tooltip: "Notifications",
             ),
-            const SizedBox(height: 30),
-            Text("Mes Déclarations", style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600)),
-            const Divider(),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.folder_off_outlined, size: 60, color: Colors.grey.shade400),
-                    const SizedBox(height: 16),
-                    const Text("Aucune déclaration en cours.", style: TextStyle(fontSize: 16, color: Colors.grey)),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          )),
+        ],
       ),
-    );
-  }
-
-  AppBar _buildAppBar(BuildContext context, AccueilCtrl ctrl) {
-    return AppBar(
-      title: const Text("Mon Espace"),
-      backgroundColor: const Color(0xff1b263b),
-      leading: Builder(
-        builder: (context) => PopupMenuButton<String>(
-          icon: const Icon(Icons.menu),
-          color: Theme.of(context).cardColor,
-          onSelected: (value) {
-            if (value == 'notifications') Get.snackbar("Bientôt", "Page de notifications");
-            if (value == 'aide') Get.snackbar("Bientôt", "Page d'aide");
-            if (value == 'deconnexion') ctrl.seDeconnecter();
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            _buildPopupMenuItem(context, value: 'notifications', icon: Icons.notifications_outlined, text: 'Notifications'),
-            _buildPopupMenuItem(context, value: 'aide', icon: Icons.help_outline, text: 'Aide et Support'),
-            _buildThemePopupMenuItem(context),
-            const PopupMenuDivider(),
-            _buildPopupMenuItem(context, value: 'deconnexion', icon: Icons.logout, text: 'Se déconnecter'),
-          ],
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_none),
-          onPressed: () => Get.snackbar("Bientôt", "Page de notifications"),
-          tooltip: "Notifications",
-        )
-      ],
-    );
-  }
-
-  void _afficherDialogueTheme(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).dialogBackgroundColor,
-          title: Text("Choisir un thème", style: Theme.of(context).textTheme.titleLarge),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+      body: RefreshIndicator(
+        onRefresh: controller.chargerDonneesAccueil,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ListTile(
-                leading: Icon(Icons.wb_sunny_outlined, color: Theme.of(context).iconTheme.color),
-                title: Text("Thème Clair", style: Theme.of(context).textTheme.bodyLarge),
-                onTap: () { Get.changeThemeMode(ThemeMode.light); Get.back(); },
+              Obx(() => Text(
+                "Bonjour, ${controller.nomUtilisateur.value}",
+                style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.bold),
+              )),
+              const SizedBox(height: 30),
+              _buildActionButton(
+                icon: Icons.add_circle_outline,
+                titre: "Nouvelle Déclaration",
+                sousTitre: "Commencer une nouvelle procédure",
+                onTap: controller.allerVersDeclaration,
               ),
-              ListTile(
-                leading: Icon(Icons.dark_mode_outlined, color: Theme.of(context).iconTheme.color),
-                title: Text("Thème Sombre", style: Theme.of(context).textTheme.bodyLarge),
-                onTap: () { Get.changeThemeMode(ThemeMode.dark); Get.back(); },
-              ),
+              const SizedBox(height: 30),
+              Text("Historique de mes Déclarations", style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600)),
+              const Divider(thickness: 1.5),
+              const SizedBox(height: 10),
+              Obx(() {
+                if (controller.isLoading.value && controller.listeDossiers.isEmpty) {
+                  return const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()));
+                }
+                if (controller.listeDossiers.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40.0),
+                      child: Text("Vous n'avez aucune déclaration pour le moment."),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: controller.listeDossiers.length,
+                  itemBuilder: (context, index) {
+                    final dossier = controller.listeDossiers[index];
+                    return Card(
+                      child: ListTile(
+                        leading: Icon(_getIconForStatus(dossier.statut), color: _getColorForStatus(dossier.statut)),
+                        title: Text("Dossier soumis le ${DateFormat('dd/MM/yy', 'fr_FR').format(dossier.dateSoumission.toDate())}"),
+                        subtitle: Text("Statut: ${dossier.statut}"),
+                      ),
+                    );
+                  },
+                );
+              })
             ],
           ),
-        );
-      },
-    );
-  }
-  
-  PopupMenuItem<String> _buildThemePopupMenuItem(BuildContext context) {
-    return PopupMenuItem<String>(
-      value: 'theme',
-      onTap: () => Future.delayed(const Duration(milliseconds: 100), () => _afficherDialogueTheme(context)),
-      child: Row(
-        children: [
-          Icon(Icons.dark_mode_outlined, color: Theme.of(context).iconTheme.color),
-          const SizedBox(width: 12),
-          Text("Changer de Thème", style: Theme.of(context).textTheme.bodyLarge),
-          const Spacer(),
-          Icon(Icons.arrow_right, color: Theme.of(context).iconTheme.color),
-        ],
-      ),
-    );
-  }
-  
-  PopupMenuItem<String> _buildPopupMenuItem(BuildContext context, {required String value, required IconData icon, required String text}) {
-    return PopupMenuItem<String>(
-      value: value,
-      child: Row(
-        children: [
-          Icon(icon, color: Theme.of(context).iconTheme.color),
-          const SizedBox(width: 12),
-          Text(text, style: Theme.of(context).textTheme.bodyLarge),
-        ],
+        ),
       ),
     );
   }
 
-  // --- VERSION COMPLÈTE ET CORRIGÉE DE LA FONCTION ---
+  Color _getColorForStatus(String statut) {
+    switch (statut) {
+      case 'Soumis': return Colors.blue;
+      case 'Traité par Agent': return Colors.purple;
+      case 'Validé par Directeur': return Colors.orange;
+      case 'Payé': return Colors.green;
+      case 'Rejeté': return Colors.red;
+      default: return Colors.grey;
+    }
+  }
+
+  IconData _getIconForStatus(String statut) {
+    switch (statut) {
+      case 'Soumis': return Icons.hourglass_top_outlined;
+      case 'Traité par Agent': return Icons.admin_panel_settings_outlined;
+      case 'Validé par Directeur': return Icons.approval_outlined;
+      case 'Payé': return Icons.check_circle_outline;
+      case 'Rejeté': return Icons.cancel_outlined;
+      default: return Icons.help_outline;
+    }
+  }
+
   Widget _buildActionButton({required IconData icon, required String titre, required String sousTitre, required VoidCallback onTap}) {
     return Card(
       elevation: 2,
@@ -167,6 +157,31 @@ class AccueilVue extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+  
+  void _afficherDialogueTheme(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).dialogBackgroundColor,
+          title: Text("Choisir un thème", style: Theme.of(context).textTheme.titleLarge),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text("Thème Clair"),
+                onTap: () { Get.changeThemeMode(ThemeMode.light); Get.back(); },
+              ),
+              ListTile(
+                title: const Text("Thème Sombre"),
+                onTap: () { Get.changeThemeMode(ThemeMode.dark); Get.back(); },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

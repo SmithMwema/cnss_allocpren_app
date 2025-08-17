@@ -25,6 +25,7 @@ class DeclarationCtrl extends GetxController {
   final employeurAssureCtrl = TextEditingController();
   final numAffiliationEmployeurCtrl = TextEditingController();
   final adresseEmployeurCtrl = TextEditingController();
+  
   final nomBeneficiaireCtrl = TextEditingController();
   final postNomBeneficiaireCtrl = TextEditingController();
   final prenomBeneficiaireCtrl = TextEditingController();
@@ -40,7 +41,7 @@ class DeclarationCtrl extends GetxController {
   DateTime? _dateAccouchementSelectionnee;
   var nomFichierSelectionne = ''.obs;
   PlatformFile? fichierSelectionne;
-
+  
   void soumettreDeclaration() async {
     if (_dateAccouchementSelectionnee == null) {
       Get.snackbar("Erreur", "Veuillez sélectionner la date prévue d'accouchement.");
@@ -51,7 +52,7 @@ class DeclarationCtrl extends GetxController {
       return;
     }
 
-    Get.dialog(const Center(child: CircularProgressIndicator()));
+    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
 
     try {
       final dossier = Dossier(
@@ -60,21 +61,20 @@ class DeclarationCtrl extends GetxController {
         prenomAssure: prenomAssureCtrl.text,
         dateSoumission: Timestamp.now(),
         statut: "Soumis",
+        // Pensez à ajouter les autres champs au modèle et ici
       );
       
       await _firestore.soumettreNouveauDossier(dossier);
 
-      Get.back();
+      Get.back(); // Ferme le dialogue
       Get.snackbar("Succès", "Déclaration envoyée !");
       Future.delayed(const Duration(seconds: 2), () => Get.back());
 
     } catch (e) {
       Get.back();
-      Get.snackbar("Erreur", "L'envoi a échoué.");
+      Get.snackbar("Erreur", "L'envoi a échoué : ${e.toString()}");
     }
   }
-
-  // --- CONTENU DES MÉTHODES QUI MANQUAIENT ---
 
   Future<void> choisirDate(BuildContext context, TextEditingController controller, {bool isDateDeNaissance = false}) async {
     DateTime? dateChoisie = await showDatePicker(
@@ -114,6 +114,8 @@ class DeclarationCtrl extends GetxController {
     if (result != null) {
       fichierSelectionne = result.files.first;
       nomFichierSelectionne.value = result.files.first.name;
+    } else {
+      print("Sélection de fichier annulée.");
     }
   }
 
@@ -129,6 +131,7 @@ class DeclarationCtrl extends GetxController {
     employeurAssureCtrl.dispose();
     numAffiliationEmployeurCtrl.dispose();
     adresseEmployeurCtrl.dispose();
+    
     nomBeneficiaireCtrl.dispose();
     postNomBeneficiaireCtrl.dispose();
     prenomBeneficiaireCtrl.dispose();
@@ -140,6 +143,7 @@ class DeclarationCtrl extends GetxController {
     lieuNaissanceBeneficiaireCtrl.dispose();
     datePrevueAccouchementCtrl.dispose();
     naturePrestationCtrl.dispose();
+    
     super.onClose();
   }
 }
